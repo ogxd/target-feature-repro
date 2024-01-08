@@ -1,0 +1,37 @@
+name: Cargo ASM
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  with_rustflags:
+    name: With Rustflags
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: RUSTFLAGS="-C target-feature=+aes" cargo build --release
+
+    - name: ASM
+      run: cargo asm target_feature_repro::aes_encrypt
+
+  without:
+    name: Without Rustflags
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: cargo build --release
+
+    - name: ASM
+      run: cargo asm target_feature_repro::aes_encrypt
