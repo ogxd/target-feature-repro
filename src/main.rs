@@ -9,18 +9,18 @@ use std::time::SystemTime;
 fn main() {
     let epoch = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
     
-    #[cfg(target_arch = "x86_64")]
-    unsafe {
-        let data = _mm_set1_epi64x(epoch);
-        let key = _mm_loadu_si128(KEY.as_ptr());
-        let encrypted = aes_encrypt(data, key);
-        println!("Output: {:?}", encrypted);
-    }
-
     #[cfg(target_arch = "aarch64")]
     unsafe {
         let data = vreinterpretq_s8_u64(vdupq_n_u64(epoch));
         let key = vreinterpretq_s8_u32(vld1q_u32(KEY.as_ptr()));
+        let encrypted = aes_encrypt(data, key);
+        println!("Output: {:?}", encrypted);
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    unsafe {
+        let data = _mm_set1_epi64x(epoch as i64);
+        let key = _mm_loadu_si128(KEY.as_ptr() as *const __m128i);
         let encrypted = aes_encrypt(data, key);
         println!("Output: {:?}", encrypted);
     }
@@ -43,6 +43,6 @@ pub unsafe fn aes_encrypt(data: int8x16_t, keys: int8x16_t) -> int8x16_t {
 #[inline(never)]
 #[target_feature(enable = "aes")]
 #[cfg(target_arch = "x86_64")]
-pub unsafe fn aes_encrypt(data: int8x16_t, keys: int8x16_t) -> int8x16_t {
+pub unsafe fn aes_encrypt(data: __m128i, keys: __m128i) -> __m128i {
     _mm_aesenc_si128(data, keys)
 }
