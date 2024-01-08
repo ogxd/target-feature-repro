@@ -17,6 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - run: cargo install cargo-asm
+
     - name: Build
       run: RUSTFLAGS="-C target-feature=+aes" cargo build --release
 
@@ -29,6 +31,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - run: cargo install cargo-asm
 
     - name: Build
       run: cargo build --release
