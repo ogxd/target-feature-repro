@@ -29,7 +29,7 @@ fn main() {
 pub const KEY: [u32; 4] = [0xF2784542, 0xB09D3E21, 0x89C222E5, 0xFC3BC28E];
 
 #[inline(never)]
-#[target_feature(enable = "aes")]
+//#[target_feature(enable = "aes")]
 #[cfg(target_arch = "aarch64")]
 pub unsafe fn aes_encrypt(data: int8x16_t, keys: int8x16_t) -> int8x16_t {
     // Encrypt
@@ -41,7 +41,7 @@ pub unsafe fn aes_encrypt(data: int8x16_t, keys: int8x16_t) -> int8x16_t {
 }
 
 #[inline(never)]
-#[target_feature(enable = "aes")]
+//#[target_feature(enable = "aes")]
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn aes_encrypt(data: __m128i, keys: __m128i) -> __m128i {
     _mm_aesenc_si128(data, keys)
